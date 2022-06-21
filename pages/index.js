@@ -8,12 +8,13 @@ import { useRouter } from "next/router";
 export default function Home() {
     const [movies, setMovies] = useState();
     const router = useRouter();
-    const onClick = (id, title, poster_path) => {
+    const onClick = (id, title, poster_path, overview) => {
         router.push({
             pathname: `/movies/${id}`,
             query: {
                 title,
-                backImg: poster_path
+                backImg: poster_path,
+                overview
             }
         }, `/movies/${id}`);
     }
@@ -23,6 +24,7 @@ export default function Home() {
         (async() => {
             const { results } = await (await (await fetch('/api/movies')).json());
             setMovies(results);
+            console.log(movies);
         })();
     },[])
 
@@ -32,12 +34,13 @@ export default function Home() {
             {!movies && <h4>Loading...</h4>}
             {movies?.map((movie) => (
                         <div className="movie" key={movie.id}>
-                            <img onClick={()=>{onClick(movie.id, movie.original_title, movie.poster_path)}} src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`} />
+                            <img onClick={()=>{onClick(movie.id, movie.original_title, movie.poster_path, movie.overview)}} src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`} />
                             <Link href={{
                                 pathname: `/movies/${movie.id}`,
                                 query: {
                                     title: movie.original_title,
-                                    backImg: movie.poster_path
+                                    backImg: movie.poster_path,
+                                    overview: movie.overview
                                 }
                             }} as={`/movies/${movie.id}`}>
                                 <a>
